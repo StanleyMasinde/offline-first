@@ -18,6 +18,3 @@ if ('serviceWorker' in navigator) {
 } else {
   // Service worker is not supported fail gracefully 
 }
-
-
-setupCounter(document.querySelector('#counter'))
