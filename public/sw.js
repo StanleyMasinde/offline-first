@@ -1,9 +1,20 @@
 const CACHE_VERSION = 'V1'
 const mysStaticCache = [
-    '/index.html',
+    '/',
     '/assets/index.js',
     '/index.css'
 ];
+const handleResponse = async (event) => {
+    const cachedResponse = await caches.match(event.request)
+    if (cachedResponse) {
+        return cachedResponse
+    }
+    return new Response('Response from service worker')
+};
+const addResourcesToCache = async (resources) => {
+    const cache = await caches.open(CACHE_VERSION);
+    await cache.addAll(resources);
+};
 
 /**
  * This is triggered when this particular service worker begins installing
@@ -12,10 +23,7 @@ const mysStaticCache = [
 self.addEventListener('install', (event) => {
     // Cache your static cache. This has to be completed for the install event to be marked as
     // Successful
-    event.waitUntil(async () => {
-        const cache = await caches.open(CACHE_VERSION)
-        await cache.addAll(mysStaticCache)
-    })
+    event.waitUntil(addResourcesToCache(mysStaticCache));
 })
 
 /**
@@ -36,5 +44,5 @@ self.addEventListener('activate', (event) => {
  * Here you have the absolute power
  */
 self.addEventListener('fetch', (event) => {
-    event.respondWith(new Response('Response from service worker'))
+    event.respondWith(handleResponse(event));
 })
